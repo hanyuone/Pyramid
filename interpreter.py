@@ -28,14 +28,17 @@ def pyramid_exec(in_code):
             else:
                 start += 1
                 prev_result = 1
+        elif current == ".":
+            if len(code[start]) == 1:
+                result = "."
         elif current == "?":
             user_in = raw_input("Input: ")
-            if user_in in ["0", "1"]:
+            if user_in in ["0", "1", "."]:
                 code[start] = code[start] + user_in
             else:
                 print("Error: Not a valid input.")
                 sys.exit()
-        elif current in ["d", "r", "u"]:
+        elif current in ["d", "r", "u", "b"]:
             result = current + str(prev_result)
     return result
 
@@ -51,22 +54,23 @@ def pyramid_init():
     code[len(code) - 1] = code[len(code) - 1][:-1]
 
     stack = int(raw_input("Stack: "))
+    current_stack = []
     current_result = pyramid_exec(code[stack])
     while type(current_result) == str:
-        print(int(current_result[-1]))
+        current_stack.append(int(current_result[-1]) if current_result[-1] in ["0", "1"] else ".")
         if current_result[0] == "u":
-            if stack == 0:
-                stack = len(code) - 1
-            else:
-                stack -= 1
-                current_result = pyramid_exec(code[stack])
+            stack = (stack - 1) % len(code)
+            current_result = pyramid_exec(code[stack])
         elif current_result[0] == "d":
-            if stack == len(code) - 1:
-                stack = 0
-            else:
-                current_result = pyramid_exec(code[stack])
+            stack = (stack + 1) % len(code)
+            current_result = pyramid_exec(code[stack])
         elif current_result[0] == "r":
             current_result = pyramid_exec(code[stack])
-    print(current_result)
+        elif current_result[0] == "b":
+            print(current_stack)
+            current_stack = []
+            stack = (stack + 1) % len(code)
+            current_result = pyramid_exec(code[stack])
+    print(current_stack)
 
 pyramid_init()
