@@ -69,7 +69,6 @@ def pyramid_init():
         elif current_result[0] == "b":
             print(current_stack)
             current_stack = []
-            stack = (stack + 1) % len(code)
             current_result = pyramid_exec(code[stack])
     print(current_stack)
 
