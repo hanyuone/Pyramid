@@ -1,6 +1,7 @@
 import sys
 
 def pyramid_exec(in_code):
+    global current_stack
     code = in_code + []
     start = -1
     prev_result = -1
@@ -38,11 +39,20 @@ def pyramid_exec(in_code):
             else:
                 print("Error: Not a valid input.")
                 sys.exit()
-        elif current in ["d", "r", "u", "b"]:
+        elif current in ["v", "@", "^"]:
             result = current + str(prev_result)
+        elif current == "o":
+            print("".join(str(x) for x in current_stack))
+            current_stack = []
+        elif current == "p":
+            code[start].append(current_stack[-1])
+            current_stack = current_stack[:-1]
+        elif current == "f":
+            current_stack = current_stack[::-1]
     return result
 
 def pyramid_init():
+    global current_stack
     code_check = 1
     code = [[]]
     while code_check:
@@ -58,17 +68,13 @@ def pyramid_init():
     current_result = pyramid_exec(code[stack])
     while type(current_result) == str:
         current_stack.append(int(current_result[-1]) if current_result[-1] in ["0", "1"] else ".")
-        if current_result[0] == "u":
+        if current_result[0] == "^":
             stack = (stack - 1) % len(code)
             current_result = pyramid_exec(code[stack])
-        elif current_result[0] == "d":
+        elif current_result[0] == "v":
             stack = (stack + 1) % len(code)
             current_result = pyramid_exec(code[stack])
-        elif current_result[0] == "r":
-            current_result = pyramid_exec(code[stack])
-        elif current_result[0] == "b":
-            print(current_stack)
-            current_stack = []
+        elif current_result[0] == "@":
             current_result = pyramid_exec(code[stack])
     print(current_stack)
 
